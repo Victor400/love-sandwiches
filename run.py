@@ -1,13 +1,19 @@
-# run.py
+import gspread
+from google.oauth2.service_account import Credentials
 
-import sys
+SCOPE = [
+    "https://www.googleapis.com/auth/spreadsheets",
+    "https://www.googleapis.com/auth/drive.file",
+    "https://www.googleapis.com/auth/drive"
+    ]
 
-def check_venv():
-    # Check if we are inside a virtual environment
-    if hasattr(sys, 'real_prefix') or (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix):
-        print("The virtual environment is active.")
-    else:
-        print("The virtual environment is not active.")
+CREDS = Credentials.from_service_account_file('creds.json')
+SCOPED_CREDS = CREDS.with_scopes(SCOPE)
+GSPREAD_CLIENT = gspread.authorize(SCOPED_CREDS)
+SHEET = GSPREAD_CLIENT.open('love_sandwiches')
 
-if __name__ == "__main__":
-    check_venv()
+sales = SHEET.worksheet('sales')
+
+data = sales.get_all_values()
+
+print(data)
